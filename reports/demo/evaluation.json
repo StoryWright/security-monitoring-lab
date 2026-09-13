@@ -1,0 +1,26 @@
+{
+  "scope": "Three hand-labeled positive scenarios and three negative controls in a synthetic fixture. Not a real-world accuracy estimate.",
+  "expectedPositiveCases": [
+    {
+      "rule": "AUTH-BURST",
+      "evidence": "burst-5"
+    },
+    {
+      "rule": "ADMIN-CHANGE",
+      "evidence": "unapproved-admin"
+    },
+    {
+      "rule": "FILE-CHANGE",
+      "evidence": "unapproved-file"
+    }
+  ],
+  "negativeControls": [
+    "spaced retries on lab-win-02",
+    "approved-admin",
+    "approved-file"
+  ],
+  "truePositives": 3,
+  "falsePositives": 0,
+  "falseNegatives": 0,
+  "pass": true
+}

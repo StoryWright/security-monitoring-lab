@@ -1,0 +1,7 @@
+PASS: XML syntax and root: demo-localfile.fragment.xml
+PASS: XML syntax and root: linux-agent.fragment.xml
+PASS: XML syntax and root: storylab_rules.xml
+PASS: XML syntax and root: windows-agent.fragment.xml
+PASS: Six unique local rule IDs
+PASS: Fixture expectations reference supplied rule IDs
+6 configuration checks passed. Native Wazuh decoding and rule evaluation were NOT RUN.

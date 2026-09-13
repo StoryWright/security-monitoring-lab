@@ -1,0 +1,3 @@
+<ossec_config>
+  <localfile><location>/var/log/storylab/events.jsonl</location><log_format>json</log_format></localfile>
+</ossec_config>

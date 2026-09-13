@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "settings": {
+    "threshold": 5,
+    "windowSeconds": 300
+  },
+  "eventCount": 16,
+  "incidents": [
+    {
+      "id": "INC-001",
+      "rule": "AUTH-BURST",
+      "severity": "medium",
+      "status": "Needs investigation",
+      "agent": "lab-win-01",
+      "firstSeen": "2026-08-01T12:00:00.000Z",
+      "lastSeen": "2026-08-01T12:01:20.000Z",
+      "evidenceIds": [
+        "burst-1",
+        "burst-2",
+        "burst-3",
+        "burst-4",
+        "burst-5"
+      ],
+      "ip": "192.0.2.10",
+      "title": "Repeated failed authentication",
+      "finding": "At least 5 failed sign-ins from one source to one monitored host within 300 seconds.",
+      "nextSteps": [
+        "Check whether this is a shared source IP or a user retrying a password.",
+        "Review affected accounts and nearby successful logins.",
+        "Confirm scope before proposing containment."
+      ],
+      "nearbyContext": [
+        {
+          "id": "after-burst-success",
+          "type": "auth_success",
+          "timestamp": "2026-08-01T12:01:30.000Z",
+          "user": "lab_alex",
+          "ip": "192.0.2.10",
+          "command": ""
+        },
+        {
+          "id": "process-context",
+          "type": "process",
+          "timestamp": "2026-08-01T12:01:40.000Z",
+          "user": "STORYLAB\\lab_alex",
+          "ip": "",
+          "command": "C:\\Windows\\System32\\whoami.exe"
+        }
+      ]
+    },
+    {
+      "id": "INC-002",
+      "rule": "ADMIN-CHANGE",
+      "severity": "high",
+      "status": "Needs investigation",
+      "agent": "lab-win-01",
+      "firstSeen": "2026-08-01T12:05:00.000Z",
+      "lastSeen": "2026-08-01T12:05:00.000Z",
+      "evidenceIds": [
+        "unapproved-admin"
+      ],
+      "title": "Administrator-group membership changed",
+      "actor": "lab_operator",
+      "user": "STORYLAB\\lab_alex",
+      "finding": "A privileged group change has no matching approval in the supplied change records. Missing approval is a review gap, not proof of malicious activity.",
+      "nextSteps": [
+        "Validate the actor and affected member against the change request.",
+        "Check the account owner and relevant authentication activity.",
+        "Escalate an unapproved change through the incident process."
+      ],
+      "nearbyContext": []
+    },
+    {
+      "id": "INC-003",
+      "rule": "FILE-CHANGE",
+      "severity": "medium",
+      "status": "Needs investigation",
+      "agent": "lab-linux-01",
+      "firstSeen": "2026-08-01T12:13:20.000Z",
+      "lastSeen": "2026-08-01T12:13:20.000Z",
+      "evidenceIds": [
+        "unapproved-file"
+      ],
+      "title": "Monitored file changed",
+      "path": "/etc/ssh/sshd_config",
+      "finding": "A monitored file changed without a matching supplied approval record.",
+      "nextSteps": [
+        "Compare file contents or hashes before and after the change.",
+        "Check the change window and responsible administrator.",
+        "Review nearby process activity and restore only after authorization."
+      ],
+      "nearbyContext": []
+    }
+  ],
+  "benignChanges": [
+    {
+      "id": "approved-admin",
+      "type": "admin_group_change",
+      "reason": "Matches a reviewed approved-change record supplied separately."
+    },
+    {
+      "id": "approved-file",
+      "type": "file_change",
+      "reason": "Matches a reviewed approved-change record supplied separately."
+    }
+  ],
+  "limitations": [
+    "Offline analysis; this program does not collect endpoint telemetry.",
+    "Alerts are investigation leads, not confirmed compromises.",
+    "Missing/local-only authentication IPs cannot be source-IP correlated.",
+    "Time-window analysis uses event timestamps; synchronize endpoint clocks.",
+    "Only the documented event types are normalized."
+  ],
+  "provenance": "SYNTHETIC REPLAY. The input mimics documented Wazuh/Windows event structures. This report was produced by the local Node.js pipeline, not a live Wazuh installation.",
+  "ingestion": {
+    "ignored": 0,
+    "duplicates": 0,
+    "errorCount": 0,
+    "errors": []
+  }
+}

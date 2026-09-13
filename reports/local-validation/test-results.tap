@@ -1,0 +1,178 @@
+TAP version 13
+# Subtest: normalizes Windows 4625 failures
+ok 1 - normalizes Windows 4625 failures
+  ---
+  duration_ms: 2.0829
+  type: 'test'
+  ...
+# Subtest: normalizes Linux Wazuh authentication groups
+ok 2 - normalizes Linux Wazuh authentication groups
+  ---
+  duration_ms: 0.5091
+  type: 'test'
+  ...
+# Subtest: normalizes local administrator SID changes
+ok 3 - normalizes local administrator SID changes
+  ---
+  duration_ms: 0.1537
+  type: 'test'
+  ...
+# Subtest: normalizes domain administrator SID changes
+ok 4 - normalizes domain administrator SID changes
+  ---
+  duration_ms: 0.1462
+  type: 'test'
+  ...
+# Subtest: ordinary group membership is not administrator escalation
+ok 5 - ordinary group membership is not administrator escalation
+  ---
+  duration_ms: 0.1498
+  type: 'test'
+  ...
+# Subtest: normalizes FIM modifications
+ok 6 - normalizes FIM modifications
+  ---
+  duration_ms: 0.1068
+  type: 'test'
+  ...
+# Subtest: normalizes Sysmon process context
+ok 7 - normalizes Sysmon process context
+  ---
+  duration_ms: 0.1217
+  type: 'test'
+  ...
+# Subtest: supports Wazuh timezone offsets without colon
+ok 8 - supports Wazuh timezone offsets without colon
+  ---
+  duration_ms: 0.1289
+  type: 'test'
+  ...
+# Subtest: rejects impossible calendar dates
+ok 9 - rejects impossible calendar dates
+  ---
+  duration_ms: 0.2424
+  type: 'test'
+  ...
+# Subtest: rejects invalid authentication IP
+ok 10 - rejects invalid authentication IP
+  ---
+  duration_ms: 2.8277
+  type: 'test'
+  ...
+# Subtest: deduplicates event IDs
+ok 11 - deduplicates event IDs
+  ---
+  duration_ms: 0.3194
+  type: 'test'
+  ...
+# Subtest: reports malformed records without crashing
+ok 12 - reports malformed records without crashing
+  ---
+  duration_ms: 0.1437
+  type: 'test'
+  ...
+# Subtest: JSON parse errors do not expose source fragments
+ok 13 - JSON parse errors do not expose source fragments
+  ---
+  duration_ms: 0.1404
+  type: 'test'
+  ...
+# Subtest: ignores unsupported event types
+ok 14 - ignores unsupported event types
+  ---
+  duration_ms: 0.0816
+  type: 'test'
+  ...
+# Subtest: five failures produce one correlated case
+ok 15 - five failures produce one correlated case
+  ---
+  duration_ms: 0.4198
+  type: 'test'
+  ...
+# Subtest: slow retries do not trigger burst detection
+ok 16 - slow retries do not trigger burst detection
+  ---
+  duration_ms: 0.107
+  type: 'test'
+  ...
+# Subtest: exact time-window boundary is included
+ok 17 - exact time-window boundary is included
+  ---
+  duration_ms: 0.1411
+  type: 'test'
+  ...
+# Subtest: different hosts are not silently combined
+ok 18 - different hosts are not silently combined
+  ---
+  duration_ms: 0.1171
+  type: 'test'
+  ...
+# Subtest: unsorted replay has stable results
+ok 19 - unsorted replay has stable results
+  ---
+  duration_ms: 0.5915
+  type: 'test'
+  ...
+# Subtest: unapproved privileged change needs investigation
+ok 20 - unapproved privileged change needs investigation
+  ---
+  duration_ms: 0.11
+  type: 'test'
+  ...
+# Subtest: separate reviewed approval explains a change
+ok 21 - separate reviewed approval explains a change
+  ---
+  duration_ms: 0.0795
+  type: 'test'
+  ...
+# Subtest: approval claim embedded in the log does not suppress a case
+ok 22 - approval claim embedded in the log does not suppress a case
+  ---
+  duration_ms: 0.0708
+  type: 'test'
+  ...
+# Subtest: file changes without supplied approval create a case
+ok 23 - file changes without supplied approval create a case
+  ---
+  duration_ms: 0.0756
+  type: 'test'
+  ...
+# Subtest: nearby successful login and process are retained as context
+ok 24 - nearby successful login and process are retained as context
+  ---
+  duration_ms: 0.1499
+  type: 'test'
+  ...
+# Subtest: invalid correlation settings are rejected
+ok 25 - invalid correlation settings are rejected
+  ---
+  duration_ms: 0.0801
+  type: 'test'
+  ...
+# Subtest: HTML escapes untrusted path and command text
+ok 26 - HTML escapes untrusted path and command text
+  ---
+  duration_ms: 0.2626
+  type: 'test'
+  ...
+# Subtest: Markdown escapes hostile host names
+ok 27 - Markdown escapes hostile host names
+  ---
+  duration_ms: 0.2357
+  type: 'test'
+  ...
+# Subtest: CLI writes reports, preserves existing evidence, and honors strict input
+ok 28 - CLI writes reports, preserves existing evidence, and honors strict input
+  ---
+  duration_ms: 151.0878
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 248.7246

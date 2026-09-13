@@ -1,0 +1,21 @@
+{
+  "expected": [
+    {
+      "rule": "AUTH-BURST",
+      "evidence": "burst-5"
+    },
+    {
+      "rule": "ADMIN-CHANGE",
+      "evidence": "unapproved-admin"
+    },
+    {
+      "rule": "FILE-CHANGE",
+      "evidence": "unapproved-file"
+    }
+  ],
+  "negativeControls": [
+    "spaced retries on lab-win-02",
+    "approved-admin",
+    "approved-file"
+  ]
+}

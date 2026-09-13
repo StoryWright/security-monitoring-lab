@@ -1,0 +1,51 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {normalizeRecord,loadJSONL,correlate,renderHTML,incidentMarkdown} from '../src/monitor.js';
+import {spawnSync} from 'node:child_process';
+import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,resolve,dirname,basename} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const stamp=s=>new Date(Date.UTC(2026,7,1)+s*1000).toISOString();
+const event=(id,s,type='auth_failure',extra={})=>({id,timestamp:stamp(s),integration:'storylab',event:type,srcip:'192.0.2.1',agent:'lab-win-01',...extra});
+const normalized=records=>records.map((r,i)=>normalizeRecord(r,i+1));
+
+test('normalizes Windows 4625 failures',()=>assert.equal(normalizeRecord({id:'a',timestamp:stamp(0),agent:{name:'w'},data:{win:{system:{eventID:'4625'},eventdata:{ipAddress:'192.0.2.1',targetUserName:'lab_a'}}}}).type,'auth_failure'));
+test('normalizes Linux Wazuh authentication groups',()=>assert.equal(normalizeRecord({timestamp:stamp(0),rule:{groups:['authentication_failed']},data:{srcip:'192.0.2.1',dstuser:'lab_a'}}).type,'auth_failure'));
+test('normalizes local administrator SID changes',()=>assert.equal(normalizeRecord({timestamp:stamp(0),data:{win:{system:{eventID:'4732'},eventdata:{targetSid:'S-1-5-32-544'}}}}).type,'admin_group_change'));
+test('normalizes domain administrator SID changes',()=>assert.equal(normalizeRecord({timestamp:stamp(0),data:{win:{system:{eventID:'4728'},eventdata:{targetSid:'S-1-5-21-1-2-3-512'}}}}).type,'admin_group_change'));
+test('ordinary group membership is not administrator escalation',()=>assert.equal(normalizeRecord({timestamp:stamp(0),data:{win:{system:{eventID:'4732'},eventdata:{targetSid:'S-1-5-32-545'}}}}),null));
+test('normalizes FIM modifications',()=>assert.equal(normalizeRecord({timestamp:stamp(0),syscheck:{event:'modified',path:'/etc/ssh/sshd_config'}}).type,'file_change'));
+test('normalizes Sysmon process context',()=>assert.equal(normalizeRecord({timestamp:stamp(0),data:{win:{system:{eventID:'1',providerName:'Microsoft-Windows-Sysmon'},eventdata:{commandLine:'whoami'}}}}).type,'process'));
+test('supports Wazuh timezone offsets without colon',()=>assert.equal(normalizeRecord({...event('a',0),timestamp:'2026-08-01T00:00:00.000+0000'}).time,Date.UTC(2026,7,1)));
+test('rejects impossible calendar dates',()=>assert.throws(()=>normalizeRecord({...event('a',0),timestamp:'2026-02-30T00:00:00Z'})));
+test('rejects invalid authentication IP',()=>assert.throws(()=>normalizeRecord(event('a',0,'auth_failure',{srcip:'-'}))));
+test('deduplicates event IDs',()=>{const s=JSON.stringify(event('same',0));const r=loadJSONL(s+'\n'+s);assert.equal(r.events.length,1);assert.equal(r.duplicates,1);});
+test('reports malformed records without crashing',()=>{const r=loadJSONL('bad\n'+JSON.stringify(event('a',0)));assert.equal(r.errorCount,1);assert.equal(r.events.length,1);});
+test('JSON parse errors do not expose source fragments',()=>assert.ok(!JSON.stringify(loadJSONL('{"private":"DO_NOT_DISCLOSE" broken}').errors).includes('DO_NOT_DISCLOSE')));
+test('ignores unsupported event types',()=>assert.equal(loadJSONL(JSON.stringify(event('a',0,'unrecognized'))).ignored,1));
+test('five failures produce one correlated case',()=>assert.equal(correlate(normalized([0,1,2,3,4].map(s=>event('a'+s,s)))).incidents.length,1));
+test('slow retries do not trigger burst detection',()=>assert.equal(correlate(normalized([0,400,800,1200,1600].map(s=>event('a'+s,s)))).incidents.length,0));
+test('exact time-window boundary is included',()=>assert.equal(correlate(normalized([0,10,20,30,300].map(s=>event('a'+s,s)))).incidents.length,1));
+test('different hosts are not silently combined',()=>assert.equal(correlate(normalized([0,1,2,3,4].map(s=>event('a'+s,s,'auth_failure',{agent:s<3?'one':'two'})))).incidents.length,0));
+test('unsorted replay has stable results',()=>{const a=normalized([0,1,2,3,4].map(s=>event('a'+s,s)));assert.deepEqual(correlate(a).incidents,correlate([...a].reverse()).incidents);});
+test('unapproved privileged change needs investigation',()=>{const r=correlate(normalized([event('admin',0,'admin_group_change')]));assert.equal(r.incidents[0].rule,'ADMIN-CHANGE');assert.equal(r.incidents[0].status,'Needs investigation');});
+test('separate reviewed approval explains a change',()=>{const r=correlate(normalized([event('admin',0,'admin_group_change')]),{approvedChanges:['admin']});assert.equal(r.incidents.length,0);assert.equal(r.benignChanges.length,1);});
+test('approval claim embedded in the log does not suppress a case',()=>assert.equal(correlate(normalized([event('admin',0,'admin_group_change',{approved:true})])).incidents.length,1));
+test('file changes without supplied approval create a case',()=>assert.equal(correlate(normalized([event('file',0,'file_change',{path:'/etc/ssh/sshd_config'})])).incidents[0].rule,'FILE-CHANGE'));
+test('nearby successful login and process are retained as context',()=>{const records=[0,1,2,3,4].map(s=>event('a'+s,s));records.push(event('success',5,'auth_success'));records.push(event('process',6,'process',{command:'whoami'}));assert.equal(correlate(normalized(records)).incidents[0].nearbyContext.length,2);});
+test('invalid correlation settings are rejected',()=>{assert.throws(()=>correlate([],{threshold:1}));assert.throws(()=>correlate([],{approvedChanges:'all'}));});
+test('HTML escapes untrusted path and command text',()=>{const r=correlate(normalized([event('file',0,'file_change',{path:'<script>alert(1)</script>'})]));assert.ok(!renderHTML(r).includes('<script>'));assert.ok(renderHTML(r).includes('&lt;script&gt;'));});
+test('Markdown escapes hostile host names',()=>{const r=correlate(normalized([event('file',0,'file_change',{path:'/x',agent:'![tracker](https://example.invalid/track)'})]));assert.ok(!incidentMarkdown(r.incidents[0],'Synthetic').includes('![tracker]('));});
+test('CLI writes reports, preserves existing evidence, and honors strict input',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'story-monitor-test-'));
+ try {
+  const input=join(dir,'events.jsonl'),out=join(dir,'reports');
+  writeFileSync(input,JSON.stringify(event('file',0,'file_change',{path:'/etc/example.conf'})));
+  const cli=fileURLToPath(new URL('../src/cli.js',import.meta.url));
+  const run=args=>spawnSync(process.execPath,[cli,...args],{cwd:dir,encoding:'utf8'});
+  let r=run(['--input',input,'--output-dir',out]);assert.equal(r.status,0,r.stderr);assert.equal(JSON.parse(readFileSync(join(out,'report.json'),'utf8')).incidents.length,1);
+  r=run(['--input',input,'--output-dir',out]);assert.equal(r.status,1);assert.match(r.stderr,/empty output/);
+  writeFileSync(input,'bad');r=run(['--input',input,'--output-dir',join(dir,'strict'),'--strict']);assert.equal(r.status,3);
+ }finally{assert.equal(dirname(resolve(dir)),resolve(tmpdir()));assert.ok(basename(dir).startsWith('story-monitor-test-'));rmSync(dir,{recursive:true,force:true});}
+});

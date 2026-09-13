@@ -1,0 +1,22 @@
+[
+  {
+    "id": "native-failure",
+    "ruleId": "100101"
+  },
+  {
+    "id": "native-success",
+    "ruleId": "100102"
+  },
+  {
+    "id": "native-admin",
+    "ruleId": "100103"
+  },
+  {
+    "id": "native-file",
+    "ruleId": "100104"
+  },
+  {
+    "id": "native-process",
+    "ruleId": "100105"
+  }
+]

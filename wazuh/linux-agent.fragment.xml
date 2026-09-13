@@ -1,0 +1,5 @@
+<!-- Merge into an existing agent configuration. Skip duplicate journald collection if already enabled. -->
+<ossec_config>
+  <localfile><location>journald</location><log_format>journald</log_format></localfile>
+  <syscheck><directories realtime="yes" check_all="yes">/etc/ssh</directories></syscheck>
+</ossec_config>

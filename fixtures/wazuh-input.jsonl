@@ -1,0 +1,5 @@
+{"id":"native-failure","timestamp":"2026-08-01T12:00:00.000Z","integration":"storylab","event":"auth_failure","srcip":"192.0.2.10","user":"lab_alex","agent":"lab-win-01"}
+{"id":"native-success","timestamp":"2026-08-01T12:00:01.000Z","integration":"storylab","event":"auth_success","srcip":"192.0.2.10","user":"lab_alex","agent":"lab-win-01"}
+{"id":"native-admin","timestamp":"2026-08-01T12:00:02.000Z","integration":"storylab","event":"admin_group_change","user":"lab_alex","actor":"lab_operator","agent":"lab-win-01"}
+{"id":"native-file","timestamp":"2026-08-01T12:00:03.000Z","integration":"storylab","event":"file_change","path":"/etc/ssh/sshd_config","agent":"lab-linux-01"}
+{"id":"native-process","timestamp":"2026-08-01T12:00:04.000Z","integration":"storylab","event":"process","command":"whoami","agent":"lab-win-01"}
