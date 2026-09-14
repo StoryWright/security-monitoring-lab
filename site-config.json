@@ -1,0 +1,13 @@
+{
+  "engine": "src/monitor.js",
+  "data": [
+    [
+      "fixtures/events.jsonl",
+      "events.jsonl"
+    ],
+    [
+      "fixtures/context.json",
+      "context.json"
+    ]
+  ]
+}

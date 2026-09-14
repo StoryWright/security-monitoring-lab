@@ -3,7 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
-  "scripts": { "test": "node --test", "demo": "node scripts/demo.js" },
-  "description": "Wazuh export normalization, incident correlation, and evidence reports"
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test",
+    "demo": "node scripts/demo.js",
+    "build:site": "node scripts/build-site.mjs",
+    "test:browser": "node scripts/check-browser.mjs"
+  },
+  "description": "Wazuh export normalization, incident correlation, and evidence reports",
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
 }

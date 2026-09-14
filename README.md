@@ -6,6 +6,21 @@ An offline investigation pipeline for selected Wazuh export events, with a repro
 
 **Current status:** local Node parsing, correlation, reports, and tests are runnable. The included data is synthetic. Wazuh and Sysmon have not been installed in a live lab; native Wazuh rule validation is pending.
 
+## Browser demo
+
+**[Open the interactive demo](https://storywright.github.io/security-monitoring-lab/)**
+
+Replay the sample Wazuh-format events, adjust correlation rules and reviewed approvals, and inspect investigation evidence. The demo runs in your browser using synthetic fixtures; it does not connect to real accounts or endpoints.
+
+See [browser demo development](docs/BROWSER-DEMO.md) for building and testing.
+
+<details>
+<summary>Demo preview</summary>
+
+![Interactive browser demo](docs/demo-preview.png)
+
+</details>
+
 ## Run the replay
 
 Use Node.js 22 or newer in this folder:
