@@ -70,7 +70,3 @@ flowchart LR
   C --> E[Investigation cases]
   E --> F[Evidence and next steps]
 ```
-
-## Development provenance
-
-Developed with AI assistance. Source, synthetic fixtures, and reproducible tests are included. Live system deployment is claimed only when supported by separately captured evidence.
